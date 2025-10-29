@@ -1,0 +1,143 @@
+[
+    {
+        "id": "6c8e0e5bc4c78824",
+        "type": "ha-webhook",
+        "z": "5d63578bb0c3f6ab",
+        "name": "Webhook Assist",
+        "server": "4f9a9a7fdc41a9f9",
+        "version": 3,
+        "exposeAsEntityConfig": "",
+        "outputs": 1,
+        "webhookId": "noderedsend",
+        "method_get": false,
+        "method_head": false,
+        "method_post": true,
+        "method_put": true,
+        "outputProperties": [
+            {
+                "property": "topic",
+                "propertyType": "msg",
+                "value": "",
+                "valueType": "triggerId"
+            },
+            {
+                "property": "payload",
+                "propertyType": "msg",
+                "value": "",
+                "valueType": "data"
+            }
+        ],
+        "payloadLocation": false,
+        "payloadLocationType": false,
+        "headersLocation": false,
+        "headersLocationType": false,
+        "x": 260,
+        "y": 180,
+        "wires": [
+            [
+                "a2-reply-builder",
+                "32a77939e4139ed5"
+            ]
+        ]
+    },
+    {
+        "id": "a2-reply-builder",
+        "type": "function",
+        "z": "5d63578bb0c3f6ab",
+        "name": "Build reply",
+        "func": "// msg.payload is the JSON sent by the HA agent\n// Expected fields: text, context, correlation_id, reply_url\n\nmsg.headers = {\"Content-Type\": \"application/json\"};\nmsg.payload = {\n    \"request_id\": msg.payload.request_id,\n    \"response\": \"You said: \" + msg.payload.message\n}\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 470,
+        "y": 180,
+        "wires": [
+            [
+                "a3-http-post"
+            ]
+        ]
+    },
+    {
+        "id": "32a77939e4139ed5",
+        "type": "debug",
+        "z": "5d63578bb0c3f6ab",
+        "name": "debug 6",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 460,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "a3-http-post",
+        "type": "http request",
+        "z": "5d63578bb0c3f6ab",
+        "name": "POST → HA inbound webhook",
+        "method": "POST",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "http://localhost:8123/api/webhook/noderedreceive",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 690,
+        "y": 180,
+        "wires": [
+            [
+                "a4-debug"
+            ]
+        ]
+    },
+    {
+        "id": "a4-debug",
+        "type": "debug",
+        "z": "5d63578bb0c3f6ab",
+        "name": "Webhook response",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 930,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "4f9a9a7fdc41a9f9",
+        "type": "server",
+        "name": "Home Assistant",
+        "version": 5,
+        "addon": true,
+        "rejectUnauthorizedCerts": true,
+        "ha_boolean": "y|yes|true|on|home|open",
+        "connectionDelay": true,
+        "cacheJson": true,
+        "heartbeat": false,
+        "heartbeatInterval": "30",
+        "areaSelector": "friendlyName",
+        "deviceSelector": "friendlyName",
+        "entitySelector": "friendlyName",
+        "statusSeparator": ": ",
+        "statusYear": "hidden",
+        "statusMonth": "short",
+        "statusDay": "numeric",
+        "statusHourCycle": "default",
+        "statusTimeFormat": "h:m",
+        "enableGlobalContextStore": false
+    }
+]

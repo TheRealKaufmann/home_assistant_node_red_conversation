@@ -1,0 +1,16 @@
+{
+  "domain": "home_assistant_node_red_conversation",
+  "name": "Home Assistant Node Red Conversation",
+  "codeowners": [
+    "@therealkaufmann"
+  ],
+  "config_flow": true,
+  "dependencies": [
+    "conversation"
+  ],
+  "documentation": "https://github.com/therealkaufmann/home_assistant_node_red_conversation",
+  "integration_type": "service",
+  "iot_class": "local_push",
+  "issue_tracker": "https://github.com/therealkaufmann/home_assistant_node_red_conversation/issues",
+  "version": "1.0.5"
+}

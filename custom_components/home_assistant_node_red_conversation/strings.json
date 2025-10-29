@@ -1,0 +1,25 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "data": {
+          "name": "[%key:common::config_flow::data::name%]"
+        }
+      }
+    },
+    "error": {},
+    "abort": {}
+  },
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "webhook_send_id": "Webhook Send ID",
+          "webhook_receive_id": "Webhook Receive ID",
+          "timeout": "Timeout (seconds)",
+          "error_message": "Error Message"
+        }
+      }
+    }
+  }
+}
