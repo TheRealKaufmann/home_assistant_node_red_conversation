@@ -1,6 +1,6 @@
-# Home Assistant Assist <-> Node Red Conversation - Webhook Integration
+# Home Assistant Node Red Conversation - Webhook Integration
 
-This Home Assistant integration enables conversational processing with Assist via webhooks, allowing you to use external services like Node-RED for message processing.
+This **Home Assistant** integration enables conversational processing with **Assist** via **webhooks**, allowing you to use external services like **Node-RED** for message processing.
 
 ## Installation
 
@@ -52,7 +52,16 @@ If you prefer to install manually:
 
 ## Node-RED Setup
 
-### Receiving Messages
+#### Node-RED Example Flow
+
+You will find an example flow under [example-flow.json](https://github.com/TheRealKaufmann/home_assistant_node_red_conversation/blob/main/documentation/example_flow/example-flow.json)
+
+![Node-RED Example Flow](documentation/example_flow/example-node-red-flow.png)
+
+
+### More Details
+
+#### Receiving Messages
 
 1. Create a **Webhook** node in Node-RED
 2. Set the HTTP method to `POST`
@@ -61,19 +70,17 @@ If you prefer to install manually:
 5. **What it outputs:**
    ```json
    {
-      request_id: {unique id, needs to be sent back in response json}
-      message: {text message from assist}
-      conversation_id: {conversation id from assist chat}
-      satellite_id: {satellite id from voice satellites, 'null' if not available}
+      request_id: (unique id, needs to be sent back in response json)
+      message: (text message from assist)
+      conversation_id: (conversation id from assist chat)
+      satellite_id: (satellite id from voice satellites, 'null' if not available)
    }
    ```
 5. Wire it to a function node or other processing logic
 
-### Sending Responses Back
+#### Sending Responses Back
 
 To send a response back to Home Assistant, use an **HTTP Request** node:
-
-#### Option 1: Using HTTP Request Node
 
 1. Create an **HTTP Request** node in Node-RED
 2. Configure it as follows:
@@ -93,31 +100,7 @@ To send a response back to Home Assistant, use an **HTTP Request** node:
    }
    ```
 
-#### Node-RED Example Flow
-
-You will find an example flow under `documentation/example_flow/example-flow.json`.
-
-![Node-RED Example Flow](documentation/example_flow/example-node-red-flow.png)
-
-
-#### Complete Node-RED Flow
-
-1. **Webhook** node (receives from Home Assistant via {YOUR_SEND_ID})
-2. **Function** node (processes the message):
-   ```javascript
-   const response = "Processed: " + msg.payload.message;
-   msg.payload = {
-       request_id: msg.payload.request_id,
-       response: response
-   };
-   return msg;
-   ```
-3. **HTTP Request** node:
-   - Method: `POST`
-   - URL: `http://homeassistant:8123/api/webhook/{YOUR_RECEIVE_ID}`
-   - Return: `a JSON Object`
-
-## How It Works
+#### How It Works
 
 1. User sends a message in Home Assistant
 2. Integration creates a unique `request_id` and sends to webhook (Webhook Send ID):
