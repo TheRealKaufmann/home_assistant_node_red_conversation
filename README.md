@@ -68,7 +68,7 @@ You will find an example flow under [example-flow.json](https://github.com/TheRe
 3. Set the Path to your webhook ID (same as configured in "Webhook Send ID")
 4. Leave the **Name** as is
 5. **What it outputs:**
-   ```json
+   ```
    {
       request_id: (unique id, needs to be sent back in response json)
       message: (text message from assist)
