@@ -16,6 +16,7 @@ from homeassistant.helpers import intent
 from homeassistant.helpers.typing import ConfigType
 from homeassistant.helpers.network import get_url
 from homeassistant.helpers.httpx_client import get_async_client
+from homeassistant.helpers import entity_registry as er
 from homeassistant.util import ulid
 
 # Constants
@@ -150,10 +151,29 @@ class SimpleTextAgent(conversation.AbstractConversationAgent):
                 }
                 
                 # Add satellite_id (always included, null if not available)
-                satellite_id = None
-                if hasattr(user_input, 'context') and user_input.context is not None:
-                    satellite_id = getattr(user_input.context, 'satellite_id', None)
+                # Try to get satellite_id directly from ConversationInput (newer HA versions)
+                satellite_id = getattr(user_input, 'satellite_id', None)
+                
+                # If not directly available, try to look it up from device_id
+                if satellite_id is None and hasattr(user_input, 'device_id') and user_input.device_id:
+                    try:
+                        # Get entity registry to find assist_satellite entity for this device
+                        ent_reg = er.async_get(self.hass)
+                        device_id = user_input.device_id
+                        # Find entities associated with this device that are assist_satellite entities
+                        for entity_id, entity_entry in ent_reg.entities.items():
+                            if (entity_entry.device_id is not None and 
+                                entity_entry.device_id == device_id and 
+                                entity_id.startswith('assist_satellite.')):
+                                satellite_id = entity_id
+                                _LOGGER.debug(f"Found satellite_id {satellite_id} for device_id {device_id}")
+                                break
+                    except Exception as e:
+                        _LOGGER.warning(f"Error looking up satellite_id from device_id: {e}")
+                
                 webhook_payload["satellite_id"] = satellite_id
+                if satellite_id:
+                    _LOGGER.debug(f"Including satellite_id in webhook payload: {satellite_id}")
                 
                 resp = await client.post(
                     webhook_url,
